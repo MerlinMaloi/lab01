@@ -1,65 +1,64 @@
-Лабораторная работа №1. Виртуальный сервер
+##Лабораторная работа №1. Виртуальный сервер
 
-Студент:
-Гуцу Александр IA2303
+###*Студент - Гуцу Александр IA2303*
 
-Дата выполнения:
+######Дата выполнения- 20.02.2025
 
-20.02.2025
-
-Описание задачи:
+##*Описание задачи:*
 
 Изучение виртуализации операционных систем и настройка виртуального HTTP-сервера на базе Debian и QEMU. Установка и настройка LAMP, PhpMyAdmin и Drupal.
 
-Описание выполнения работы:
+##**Описание выполнения работы:**
 
-Подготовка:
+###**Подготовка:**
 
-Скачан дистрибутив Debian для архитектуры x64 без графического интерфейса.
+	1. Скачан дистрибутив Debian для архитектуры x64 без графического интерфейса.
 
-Установлена система виртуализации QEMU.
+	2. Установлена система виртуализации QEMU.
 
-Переименован образ Debian в debian.iso.
+	3. Переименован образ Debian в **debian.iso**.
 
-Создание папок и файлов:
+###**Создание папок и файлов:**
 
-Создана папка lab01.
+	- Создана папка lab01.
 
-В папке lab01 создана папка dvd и файл readme.md.
+	- В папке lab01 создана папка dvd и файл readme.md.
 
-В папку dvd помещен файл debian.iso.
+	- В папку dvd помещен файл debian.iso.
 
-Создание образа виртуальной машины:
+###**Создание образа виртуальной машины:**
 
-qemu-img create -f qcow2 debian.qcow2 8G
+`qemu-img create -f qcow2 debian.qcow2 8G`
 
-Установка Debian:
+###**Установка Debian:**
 
-qemu-system-x86_64 -hda debian.qcow2 -cdrom dvd/debian.iso -boot d -m 2G
+`qemu-system-x86_64 -hda debian.qcow2 -cdrom dvd/debian.iso -boot d -m 2G`
 
-Параметры установки:
+Параметры установки для удобства упрощенные:
 
-Имя компьютера: debian
+- Имя компьютера: debian
 
-Хостовое имя: debian.localhost
+- Хостовое имя: debian.localhost
 
-Имя пользователя: user
+- Имя пользователя: user
 
-Пароль пользователя: password
+- Пароль пользователя: password
 
-Запуск виртуальной машины:
+###**Запуск виртуальной машины:**
 
-qemu-system-x86_64 -hda debian.qcow2 -m 2G -smp 2 \
--device e1000,netdev=net0 -netdev user,id=net0,hostfwd=tcp::1080-:80,hostfwd=tcp::1022-:22
+`qemu-system-x86_64 -hda debian.qcow2 -m 2G -smp 2 -device e1000,netdev=net0 -netdev user,id=net0,hostfwd=tcp::1080-:80,hostfwd=tcp::1022-:22`
 
-Установка LAMP:
+###**Установка LAMP:**
 
+`
 su
 apt update -y
 apt install -y apache2 php libapache2-mod-php php-mysql mariadb-server mariadb-client unzip
+`
 
-Скачивание и разархивирование PhpMyAdmin и Drupal:
+###**Скачивание и разархивирование PhpMyAdmin и Drupal:**
 
+`
 wget https://files.phpmyadmin.net/phpMyAdmin/5.2.2/phpMyAdmin-5.2.2-all-languages.zip
 wget https://ftp.drupal.org/files/projects/drupal-10.0.5.zip
 
@@ -68,20 +67,24 @@ unzip phpMyAdmin-5.2.2-all-languages.zip
 mv phpMyAdmin-5.2.2-all-languages /var/www/phpmyadmin
 unzip drupal-10.0.5.zip
 mv drupal-10.0.5 /var/www/drupal
+`
 
-Настройка базы данных:
+####**Настройка базы данных:**
 
+`
 mysql -u root
 CREATE DATABASE drupal_db;
 CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON drupal_db.* TO 'user'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
+`
 
-Настройка виртуальных хостов Apache:
+###**Настройка виртуальных хостов Apache:**
 
-Файл /etc/apache2/sites-available/01-phpmyadmin.conf:
+Файл `/etc/apache2/sites-available/01-phpmyadmin.conf:`
 
+`
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
     DocumentRoot "/var/www/phpmyadmin"
@@ -90,9 +93,11 @@ EXIT;
     ErrorLog "/var/log/apache2/phpmyadmin.localhost-error.log"
     CustomLog "/var/log/apache2/phpmyadmin.localhost-access.log" common
 </VirtualHost>
+`
 
-Файл /etc/apache2/sites-available/02-drupal.conf:
+Файл `/etc/apache2/sites-available/02-drupal.conf:`
 
+`
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
     DocumentRoot "/var/www/drupal"
@@ -101,47 +106,56 @@ EXIT;
     ErrorLog "/var/log/apache2/drupal.localhost-error.log"
     CustomLog "/var/log/apache2/drupal.localhost-access.log" common
 </VirtualHost>
+`
 
-Активация виртуальных хостов и перезапуск Apache:
+####**Активация виртуальных хостов и перезапуск Apache:**
 
+`
 /usr/sbin/a2ensite 01-phpmyadmin
 /usr/sbin/a2ensite 02-drupal
 systemctl reload apache2
+`
 
 Настройка файла /etc/hosts:
 
+`
 127.0.0.1 phpmyadmin.localhost
 127.0.0.1 drupal.localhost
+`
 
-Тестирование:
+###**Тестирование:**
 
+`
 uname -a
+`
 
-Перегрузка Apache:
+Перезапуск Apache:
 
+`
 systemctl reload apache2
+`
 
-Проверка доступности сайтов:
+Проверка доступности сайтов по адресам:
 
-http://phpmyadmin.localhost:1080
+- http://phpmyadmin.localhost:1080
 
-http://drupal.localhost:1080
+- http://drupal.localhost:1080
 
-Ответы на вопросы:
+##**Ответы на вопросы:**
 
-Как скачать файл с помощью wget?
+1. Как скачать файл с помощью wget?
 
 wget [URL-адрес файла]
 
-Зачем создавать отдельную базу данных и пользователя для каждого сайта?
+2. Зачем создавать отдельную базу данных и пользователя для каждого сайта?
 
 Разделение прав доступа и безопасность.
 
 Удобство управления и резервного копирования.
 
-Минимизация рисков при компрометации одной базы.
+Минимизация рисков от взлома одной базы.
 
-Как сменить порт для управления БД на 1234?
+3.  Как сменить порт для управления БД на 1234?
 Изменить порт в конфигурационном файле MariaDB:
 
 nano /etc/mysql/mariadb.conf.d/50-server.cnf
@@ -154,7 +168,7 @@ port = 1234
 
 systemctl restart mariadb
 
-Преимущества виртуализации:
+4. *Какие преимущества?*
 
 Эффективное использование ресурсов.
 
@@ -162,9 +176,7 @@ systemctl restart mariadb
 
 Гибкость в настройке и развертывании.
 
-Простота резервного копирования и восстановления.
-
-Почему важно настроить время и временную зону на сервере?
+5. Почему важно настроить время и временную зону на сервере?
 
 Корректная работа журналов и планировщиков задач.
 
@@ -172,21 +184,21 @@ systemctl restart mariadb
 
 Упрощение диагностики и отладки.
 
-Сколько места занимает установленная ОС?
+6. **Сколько места занимает установленная ОС?**
 Размер виртуального диска составляет примерно 1.5–2 ГБ в формате qcow2.
 
-Рекомендации по разбиению диска:
+7. **Рекомендации по разбиению диска:**
 
-/ (root) — основная файловая система.
+- / (root) — основная файловая система.
 
-/home — данные пользователей.
+- /home — данные пользователей.
 
-/var — журналы и временные файлы.
+- /var — журналы и временные файлы.
 
-/boot — загрузочные файлы.
+- /boot — загрузочные файлы.
 Такое разделение упрощает управление и предотвращает переполнение отдельных разделов.
 
-Выводы:
+##**Выводы:**
 
 В ходе работы были изучены основы виртуализации, установка и настройка Debian на виртуальной машине, развертывание LAMP-стека и настройка веб-приложений PhpMyAdmin и Drupal. Полученные навыки пригодятся при администрировании серверов и развертывании веб-сервисов.
 
