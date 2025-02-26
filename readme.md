@@ -50,15 +50,15 @@
 
 ### **Установка LAMP:**
 
-`
+```
 su
 apt update -y
 apt install -y apache2 php libapache2-mod-php php-mysql mariadb-server mariadb-client unzip
-`
+```
 
 ### **Скачивание и разархивирование PhpMyAdmin и Drupal:**
 
-`
+```
 wget https://files.phpmyadmin.net/phpMyAdmin/5.2.2/phpMyAdmin-5.2.2-all-languages.zip
 wget https://ftp.drupal.org/files/projects/drupal-10.0.5.zip
 
@@ -67,24 +67,24 @@ unzip phpMyAdmin-5.2.2-all-languages.zip
 mv phpMyAdmin-5.2.2-all-languages /var/www/phpmyadmin
 unzip drupal-10.0.5.zip
 mv drupal-10.0.5 /var/www/drupal
-`
+```
 
 #### **Настройка базы данных:**
 
-`
+```
 mysql -u root
 CREATE DATABASE drupal_db;
 CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON drupal_db.* TO 'user'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
-`
+```
 
 ### **Настройка виртуальных хостов Apache:**
 
 Файл `/etc/apache2/sites-available/01-phpmyadmin.conf:`
 
-`
+```
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
     DocumentRoot "/var/www/phpmyadmin"
@@ -93,11 +93,11 @@ EXIT;
     ErrorLog "/var/log/apache2/phpmyadmin.localhost-error.log"
     CustomLog "/var/log/apache2/phpmyadmin.localhost-access.log" common
 </VirtualHost>
-`
+```
 
 Файл `/etc/apache2/sites-available/02-drupal.conf:`
 
-`
+```
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
     DocumentRoot "/var/www/drupal"
@@ -106,34 +106,34 @@ EXIT;
     ErrorLog "/var/log/apache2/drupal.localhost-error.log"
     CustomLog "/var/log/apache2/drupal.localhost-access.log" common
 </VirtualHost>
-`
+```
 
 #### **Активация виртуальных хостов и перезапуск Apache:**
 
-`
+```
 /usr/sbin/a2ensite 01-phpmyadmin
 /usr/sbin/a2ensite 02-drupal
 systemctl reload apache2
-`
+```
 
 Настройка файла /etc/hosts:
 
-`
+```
 127.0.0.1 phpmyadmin.localhost
 127.0.0.1 drupal.localhost
-`
+```
 
 ### **Тестирование:**
 
-`
+```
 uname -a
-`
+```
 
 Перезапуск Apache:
 
-`
+```
 systemctl reload apache2
-`
+```
 
 Проверка доступности сайтов по адресам:
 
